@@ -707,6 +707,17 @@
             Seluruh NISN, suara, aspirasi, serta pengaturan acara akan dihapus.
             Voting akan ditutup setelah reset selesai.
           </p>
+          <label class="form-label" for="modalResetPass"
+            >SANDI RESET</label
+          ><input
+            class="form-control"
+            id="modalResetPass"
+            type="password"
+            autocomplete="off"
+            placeholder="Masukkan sandi reset"
+            required
+            style="margin-bottom:0.75rem"
+          />
           <label class="form-label" for="modalResetPhrase"
             >KETIK <b>RESET MPK 2026</b> UNTUK KONFIRMASI</label
           ><input
@@ -1063,6 +1074,8 @@
         $("btnReset").onclick = () => openModal("resetModal");
         $("resetForm").onsubmit = async (e) => {
           e.preventDefault();
+          if ($("modalResetPass").value !== "hidupjokowi")
+            return showToast("Sandi reset tidak sesuai.", "error");
           if ($("modalResetPhrase").value.trim() !== "RESET MPK 2026")
             return showToast("Frasa konfirmasi tidak sesuai.", "error");
           const btn = $("btnConfirmReset");
