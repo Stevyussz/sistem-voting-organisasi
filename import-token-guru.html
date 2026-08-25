@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Token Guru · MPK 2026</title>
+  <style>
+    body { font-family: monospace; padding: 2rem; background: #0d1117; color: #c9d1d9; max-width: 760px; margin: auto; }
+    h1 { color: #f0f6fc; font-size: 1.4rem; margin-bottom: 0.5rem; }
+    p.sub { color: #8b949e; font-size: 0.82rem; margin-bottom: 1.5rem; }
+    .tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+    .tab { padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-family: monospace; font-size: 0.82rem; border: 1px solid #30363d; background: #161b22; color: #8b949e; }
+    .tab.active { background: #238636; color: #fff; border-color: #238636; }
+    #panelImport, #panelPrint { display: none; }
+    #panelImport.show, #panelPrint.show { display: block; }
+
+    /* Import panel */
+    #log { background: #161b22; border: 1px solid #30363d; padding: 1rem; border-radius: 8px; height: 280px; overflow-y: auto; font-size: 0.76rem; line-height: 1.6; }
+    .ok { color: #3fb950; } .err { color: #f85149; } .info { color: #58a6ff; }
+    button { padding: 0.6rem 1.3rem; background: #238636; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-family: monospace; }
+    button:disabled { background: #333; cursor: not-allowed; }
+    button.secondary { background: #1f6feb; }
+    #progress { margin-top: 0.7rem; font-size: 0.8rem; color: #8b949e; }
+    #bar { height: 7px; background: #21262d; border-radius: 4px; margin-top: 0.35rem; overflow: hidden; }
+    #fill { height: 100%; width: 0; background: #238636; transition: width 0.3s; border-radius: 4px; }
+
+    /* Print panel */
+    .print-info { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; font-size: 0.8rem; color: #8b949e; }
+    .print-info strong { color: #f0f6fc; }
+    #btnPrint { margin-bottom: 1rem; }
+    @media print {
+      body { background: #fff; color: #000; padding: 0; max-width: none; }
+      .tabs, .tab, button, .print-info, h1, p.sub, #panelImport { display: none !important; }
+      #panelPrint { display: block !important; }
+      .ticket-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; }
+      .ticket {
+        border: 1px dashed #aaa;
+        padding: 10px 12px;
+        page-break-inside: avoid;
+        box-sizing: border-box;
+      }
+      .ticket-header { font-size: 7pt; font-weight: bold; letter-spacing: 0.1em; color: #555; margin-bottom: 4px; }
+      .ticket-school { font-size: 6.5pt; color: #777; margin-bottom: 6px; }
+      .ticket-code { font-size: 13pt; font-weight: bold; font-family: 'Courier New', monospace; letter-spacing: 0.08em; color: #000; margin: 4px 0; }
+      .ticket-label { font-size: 6.5pt; color: #555; margin-top: 4px; }
+      .ticket-no { font-size: 6pt; color: #999; float: right; }
+      .ticket-instruction { font-size: 5.5pt; color: #888; margin-top: 5px; border-top: 1px solid #ddd; padding-top: 4px; }
+    }
+    @media screen {
+      .ticket-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #30363d; border: 1px solid #30363d; border-radius: 8px; overflow: hidden; }
+      .ticket { background: #161b22; padding: 0.8rem; border: none; }
+      .ticket-header { font-size: 0.6rem; font-weight: bold; letter-spacing: 0.12em; color: #3fb950; margin-bottom: 2px; }
+      .ticket-school { font-size: 0.6rem; color: #8b949e; margin-bottom: 6px; }
+      .ticket-code { font-size: 1.1rem; font-weight: bold; font-family: monospace; letter-spacing: 0.06em; color: #f0f6fc; margin: 4px 0; }
+      .ticket-label { font-size: 0.6rem; color: #8b949e; }
+      .ticket-no { font-size: 0.55rem; color: #484f58; float: right; }
+      .ticket-instruction { font-size: 0.55rem; color: #6e7681; margin-top: 6px; border-top: 1px solid #21262d; padding-top: 5px; }
+    }
+  </style>
+</head>
+<body>
+<h1>🎫 Token Guru · MPK 2026</h1>
+<p class="sub">76 token unik untuk guru. Import ke Firestore dulu, lalu cetak lembar token.</p>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('Import')">① Import ke Firestore</div>
+  <div class="tab" onclick="showTab('Print')">② Cetak Token</div>
+</div>
+
+<!-- IMPORT PANEL -->
+<div id="panelImport" class="show">
+  <div class="print-info">
+    <strong>Tentang token guru</strong><br>
+    Format token: <code>7700000001</code> s/d <code>7700000076</code> (10 digit numerik, prefix 77)<br>
+    Guru login di halaman yang sama dengan siswa — cukup masukkan kode 10 digit ini.
+  </div>
+  <div id="log"></div>
+  <div id="progress">Tekan tombol untuk memulai import 76 token guru ke Firestore...</div>
+  <div id="bar"><div id="fill"></div></div>
+  <div style="display:flex;gap:0.5rem;margin-top:0.8rem">
+    <button id="btnStart" onclick="startImport()">Import 76 Token Guru ke Firestore</button>
+    <button class="secondary" onclick="showTab('Print')">Langsung ke Cetak Token →</button>
+  </div>
+</div>
+
+<!-- PRINT PANEL -->
+<div id="panelPrint">
+  <div class="print-info" style="display:block">
+    <strong>Cara cetak:</strong> Klik "Cetak / Print", pilih ukuran kertas A4, lalu potong tiap kotak token untuk dibagikan ke guru.
+  </div>
+  <button id="btnPrint" onclick="window.print()">🖨️ Cetak / Print</button>
+  <div class="ticket-grid" id="ticketGrid"></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="js/firebase-config.js"></script>
+<script>
+  // ── Generate tokens ──────────────────────────────────────────
+  const TEACHER_TOKENS = [];
+  for (let i = 1; i <= 76; i++) {
+    TEACHER_TOKENS.push('7700' + String(i).padStart(6, '0'));
+  }
+
+  // ── Tab switching ─────────────────────────────────────────────
+  function showTab(name) {
+    document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === (name === 'Import' ? 0 : 1)));
+    document.getElementById('panelImport').classList.toggle('show', name === 'Import');
+    document.getElementById('panelPrint').classList.toggle('show', name === 'Print');
+  }
+
+  // ── Build ticket grid on load ─────────────────────────────────
+  (function buildTickets() {
+    const grid = document.getElementById('ticketGrid');
+    TEACHER_TOKENS.forEach((tok, i) => {
+      const div = document.createElement('div');
+      div.className = 'ticket';
+      div.innerHTML = `
+        <div>
+          <span class="ticket-header">TOKEN PEMILIH GURU</span>
+          <span class="ticket-no">#${String(i+1).padStart(2,'0')}</span>
+        </div>
+        <div class="ticket-school">MPK MAN 3 JEMBER · 2026/2027</div>
+        <div class="ticket-code">${tok}</div>
+        <div class="ticket-label">Kode token voting (10 digit)</div>
+        <div class="ticket-instruction">Buka halaman voting → masukkan kode ini → pilih paslon. Kode hanya dapat digunakan 1 kali.</div>
+      `;
+      grid.appendChild(div);
+    });
+  })();
+
+  // ── Firestore import ──────────────────────────────────────────
+  function log(msg, cls = 'info') {
+    const div = document.getElementById('log');
+    div.innerHTML += `<span class="${cls}">${msg}</span>\n`;
+    div.scrollTop = div.scrollHeight;
+  }
+
+  async function startImport() {
+    if (DEMO_MODE) {
+      log('⚠️ Kamu sedang di DEMO MODE. Buka halaman tanpa ?demo=1 untuk import ke Firestore sungguhan.', 'err');
+      return;
+    }
+    const btn = document.getElementById('btnStart');
+    btn.disabled = true;
+    log(`🚀 Memulai import ${TEACHER_TOKENS.length} token guru...`, 'info');
+
+    const total = TEACHER_TOKENS.length;
+    let ok = 0, skip = 0, fail = 0;
+    const CHUNK = 20;
+
+    for (let i = 0; i < total; i += CHUNK) {
+      const chunk = TEACHER_TOKENS.slice(i, i + CHUNK);
+      const checks = await Promise.all(chunk.map(async tok => {
+        try {
+          const snap = await db.collection('tokens').doc(tok).get();
+          return snap.exists ? null : tok;
+        } catch(e) { fail++; return null; }
+      }));
+      const toWrite = checks.filter(Boolean);
+      if (toWrite.length > 0) {
+        const batch = db.batch();
+        toWrite.forEach(tok => batch.set(db.collection('tokens').doc(tok), { used: false, usedAt: null, role: 'guru' }));
+        try { await batch.commit(); ok += toWrite.length; }
+        catch(e) { fail += toWrite.length; log(`✗ Batch error: ${e.message}`, 'err'); }
+      }
+      skip += chunk.length - toWrite.length;
+
+      const pct = Math.round(((i + chunk.length) / total) * 100);
+      document.getElementById('fill').style.width = pct + '%';
+      document.getElementById('progress').textContent =
+        `Progress: ${Math.min(i + chunk.length, total)}/${total} (${pct}%) — ✓ ${ok} ditulis · ⊙ ${skip} sudah ada · ✗ ${fail} gagal`;
+      log(`Batch ${Math.floor(i/CHUNK)+1}: ${toWrite.length} ditulis, ${chunk.length - toWrite.length} dilewati`, 'ok');
+      await new Promise(r => setTimeout(r, 300));
+    }
+
+    log(`\n✅ SELESAI: ${ok} token guru berhasil diimport!`, 'ok');
+    btn.textContent = '✅ Import Selesai';
+  }
+</script>
+</body>
+</html>
