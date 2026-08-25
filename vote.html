@@ -225,9 +225,9 @@
       </div>
       <div class="voting-info">
         <span class="status-pill"
-          ><i class="status-dot"></i>NISN terverifikasi</span
-        ><strong id="displayToken">—</strong
-        ><span>Penutupan: <strong id="countdownTimer">MEMUAT...</strong></span>
+          ><i class="status-dot"></i>Terverifikasi</span
+        ><strong id="displayToken">—</strong>
+        <span>Penutupan: <strong id="countdownTimer">MEMUAT...</strong></span>
       </div>
       <section class="candidates-grid" id="candidatesContainer"></section>
     </main>
@@ -318,7 +318,7 @@
               const tokens = Store.get("mpk26_tokens") || {};
               if (!tokens[token] || tokens[token].used) {
                 showToast(
-                  "NISN sudah tidak valid atau telah digunakan.",
+                  "Kode sudah tidak valid atau telah digunakan.",
                   "error",
                 );
                 clearSession();
