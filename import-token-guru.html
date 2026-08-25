@@ -15,7 +15,7 @@
     #panelImport.show, #panelPrint.show { display: block; }
 
     /* Import panel */
-    #log { background: #161b22; border: 1px solid #30363d; padding: 1rem; border-radius: 8px; height: 280px; overflow-y: auto; font-size: 0.76rem; line-height: 1.6; }
+    #log { background: #161b22; border: 1px solid #30363d; padding: 1rem; border-radius: 8px; height: 260px; overflow-y: auto; font-size: 0.76rem; line-height: 1.6; }
     .ok { color: #3fb950; } .err { color: #f85149; } .info { color: #58a6ff; }
     button { padding: 0.6rem 1.3rem; background: #238636; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-family: monospace; }
     button:disabled { background: #333; cursor: not-allowed; }
@@ -23,72 +23,82 @@
     #progress { margin-top: 0.7rem; font-size: 0.8rem; color: #8b949e; }
     #bar { height: 7px; background: #21262d; border-radius: 4px; margin-top: 0.35rem; overflow: hidden; }
     #fill { height: 100%; width: 0; background: #238636; transition: width 0.3s; border-radius: 4px; }
+    .info-box { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; font-size: 0.8rem; color: #8b949e; }
+    .info-box strong { color: #f0f6fc; }
+    code { background: #21262d; padding: 0.1rem 0.35rem; border-radius: 4px; color: #79c0ff; font-size: 0.85em; }
 
-    /* Print panel */
-    .print-info { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; font-size: 0.8rem; color: #8b949e; }
-    .print-info strong { color: #f0f6fc; }
-    #btnPrint { margin-bottom: 1rem; }
+    /* ── PRINT ─────────────────────────────────────────────────── */
     @media print {
-      body { background: #fff; color: #000; padding: 0; max-width: none; }
-      .tabs, .tab, button, .print-info, h1, p.sub, #panelImport { display: none !important; }
+      body { background: #fff; color: #000; padding: 5mm; max-width: none; margin: 0; }
+      .tabs, .tab, button, .info-box, h1, p.sub, #panelImport { display: none !important; }
       #panelPrint { display: block !important; }
-      .ticket-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; }
+      #btnPrint { display: none !important; }
+      .print-title { display: block !important; font-size: 10pt; font-weight: bold; text-align: center; margin-bottom: 6mm; letter-spacing: 0.1em; color: #333; }
+      .ticket-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; }
       .ticket {
-        border: 1px dashed #aaa;
-        padding: 10px 12px;
+        border: 1px dashed #bbb;
+        padding: 6px 8px;
         page-break-inside: avoid;
         box-sizing: border-box;
+        min-height: 42mm;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
       }
-      .ticket-header { font-size: 7pt; font-weight: bold; letter-spacing: 0.1em; color: #555; margin-bottom: 4px; }
-      .ticket-school { font-size: 6.5pt; color: #777; margin-bottom: 6px; }
-      .ticket-code { font-size: 13pt; font-weight: bold; font-family: 'Courier New', monospace; letter-spacing: 0.08em; color: #000; margin: 4px 0; }
-      .ticket-label { font-size: 6.5pt; color: #555; margin-top: 4px; }
-      .ticket-no { font-size: 6pt; color: #999; float: right; }
-      .ticket-instruction { font-size: 5.5pt; color: #888; margin-top: 5px; border-top: 1px solid #ddd; padding-top: 4px; }
+      .ticket-header { font-size: 6pt; font-weight: bold; letter-spacing: 0.12em; color: #555; text-transform: uppercase; }
+      .ticket-school { font-size: 5.5pt; color: #888; margin: 1px 0 4px; }
+      .ticket-code { font-size: 16pt; font-weight: bold; font-family: 'Courier New', monospace; letter-spacing: 0.1em; color: #000; margin: 3px 0; }
+      .ticket-no { font-size: 5.5pt; color: #aaa; text-align: right; }
+      .ticket-label { font-size: 5.5pt; color: #666; margin-top: 2px; }
+      .ticket-instruction { font-size: 5pt; color: #999; margin-top: 5px; border-top: 1px solid #e0e0e0; padding-top: 4px; line-height: 1.4; }
     }
+    /* ── SCREEN (preview) ──────────────────────────────────────── */
     @media screen {
-      .ticket-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #30363d; border: 1px solid #30363d; border-radius: 8px; overflow: hidden; }
-      .ticket { background: #161b22; padding: 0.8rem; border: none; }
-      .ticket-header { font-size: 0.6rem; font-weight: bold; letter-spacing: 0.12em; color: #3fb950; margin-bottom: 2px; }
-      .ticket-school { font-size: 0.6rem; color: #8b949e; margin-bottom: 6px; }
-      .ticket-code { font-size: 1.1rem; font-weight: bold; font-family: monospace; letter-spacing: 0.06em; color: #f0f6fc; margin: 4px 0; }
-      .ticket-label { font-size: 0.6rem; color: #8b949e; }
-      .ticket-no { font-size: 0.55rem; color: #484f58; float: right; }
-      .ticket-instruction { font-size: 0.55rem; color: #6e7681; margin-top: 6px; border-top: 1px solid #21262d; padding-top: 5px; }
+      .print-title { display: none; }
+      .ticket-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: #21262d; border: 1px solid #30363d; border-radius: 8px; overflow: hidden; }
+      .ticket { background: #161b22; padding: 0.65rem 0.7rem; display: flex; flex-direction: column; justify-content: space-between; min-height: 120px; }
+      .ticket-header { font-size: 0.55rem; font-weight: bold; letter-spacing: 0.12em; color: #3fb950; text-transform: uppercase; }
+      .ticket-school { font-size: 0.55rem; color: #6e7681; margin: 1px 0 4px; }
+      .ticket-code { font-size: 0.95rem; font-weight: bold; font-family: monospace; letter-spacing: 0.06em; color: #f0f6fc; margin: 2px 0; }
+      .ticket-no { font-size: 0.5rem; color: #484f58; text-align: right; }
+      .ticket-label { font-size: 0.5rem; color: #6e7681; }
+      .ticket-instruction { font-size: 0.5rem; color: #484f58; margin-top: 6px; border-top: 1px solid #21262d; padding-top: 5px; line-height: 1.4; }
     }
   </style>
 </head>
 <body>
 <h1>🎫 Token Guru · MPK 2026</h1>
-<p class="sub">76 token unik untuk guru. Import ke Firestore dulu, lalu cetak lembar token.</p>
+<p class="sub">76 token mudah dibaca untuk guru. Import ke Firestore, lalu cetak dan bagikan.</p>
 
 <div class="tabs">
   <div class="tab active" onclick="showTab('Import')">① Import ke Firestore</div>
   <div class="tab" onclick="showTab('Print')">② Cetak Token</div>
 </div>
 
-<!-- IMPORT PANEL -->
+<!-- IMPORT -->
 <div id="panelImport" class="show">
-  <div class="print-info">
-    <strong>Tentang token guru</strong><br>
-    Format token: <code>7700000001</code> s/d <code>7700000076</code> (10 digit numerik, prefix 77)<br>
-    Guru login di halaman yang sama dengan siswa — cukup masukkan kode 10 digit ini.
+  <div class="info-box">
+    <strong>Format token guru</strong><br>
+    Token berbentuk <code>GURU-001</code> s/d <code>GURU-076</code> — mudah dibaca dan diketik.<br>
+    Guru cukup buka halaman voting dan ketik kode ini, sistem otomatis mengenali sebagai token guru (bukan NISN siswa).
   </div>
   <div id="log"></div>
-  <div id="progress">Tekan tombol untuk memulai import 76 token guru ke Firestore...</div>
+  <div id="progress">Tekan tombol untuk import 76 token guru ke Firestore...</div>
   <div id="bar"><div id="fill"></div></div>
-  <div style="display:flex;gap:0.5rem;margin-top:0.8rem">
-    <button id="btnStart" onclick="startImport()">Import 76 Token Guru ke Firestore</button>
-    <button class="secondary" onclick="showTab('Print')">Langsung ke Cetak Token →</button>
+  <div style="display:flex;gap:0.5rem;margin-top:0.8rem;flex-wrap:wrap">
+    <button id="btnStart" onclick="startImport()">Import 76 Token Guru</button>
+    <button class="secondary" onclick="showTab('Print')">Langsung ke Cetak →</button>
   </div>
 </div>
 
-<!-- PRINT PANEL -->
+<!-- PRINT -->
 <div id="panelPrint">
-  <div class="print-info" style="display:block">
-    <strong>Cara cetak:</strong> Klik "Cetak / Print", pilih ukuran kertas A4, lalu potong tiap kotak token untuk dibagikan ke guru.
+  <div class="info-box">
+    <strong>Cara cetak:</strong> Klik tombol cetak di bawah. Pilih kertas A4, orientasi Portrait.
+    Potong tiap kotak dan bagikan 1 per guru. Tiap kode hanya bisa dipakai <strong>1 kali</strong>.
   </div>
   <button id="btnPrint" onclick="window.print()">🖨️ Cetak / Print</button>
+  <div class="print-title">TOKEN PEMILIH GURU · PEMILIHAN MPK MAN 3 JEMBER 2026/2027</div>
   <div class="ticket-grid" id="ticketGrid"></div>
 </div>
 
@@ -96,10 +106,10 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 <script src="js/firebase-config.js"></script>
 <script>
-  // ── Generate tokens ──────────────────────────────────────────
+  // ── Token list: GURU-001 s/d GURU-076 ────────────────────────
   const TEACHER_TOKENS = [];
   for (let i = 1; i <= 76; i++) {
-    TEACHER_TOKENS.push('7700' + String(i).padStart(6, '0'));
+    TEACHER_TOKENS.push('GURU-' + String(i).padStart(3, '0'));
   }
 
   // ── Tab switching ─────────────────────────────────────────────
@@ -109,7 +119,7 @@
     document.getElementById('panelPrint').classList.toggle('show', name === 'Print');
   }
 
-  // ── Build ticket grid on load ─────────────────────────────────
+  // ── Build ticket grid ─────────────────────────────────────────
   (function buildTickets() {
     const grid = document.getElementById('ticketGrid');
     TEACHER_TOKENS.forEach((tok, i) => {
@@ -117,13 +127,17 @@
       div.className = 'ticket';
       div.innerHTML = `
         <div>
-          <span class="ticket-header">TOKEN PEMILIH GURU</span>
-          <span class="ticket-no">#${String(i+1).padStart(2,'0')}</span>
+          <div class="ticket-header">TOKEN GURU · MPK 2026</div>
+          <div class="ticket-school">MPK MAN 3 JEMBER · 2026/2027</div>
         </div>
-        <div class="ticket-school">MPK MAN 3 JEMBER · 2026/2027</div>
-        <div class="ticket-code">${tok}</div>
-        <div class="ticket-label">Kode token voting (10 digit)</div>
-        <div class="ticket-instruction">Buka halaman voting → masukkan kode ini → pilih paslon. Kode hanya dapat digunakan 1 kali.</div>
+        <div>
+          <div class="ticket-code">${tok}</div>
+          <div class="ticket-label">Kode token voting guru</div>
+        </div>
+        <div>
+          <div class="ticket-no">No. ${String(i+1).padStart(2,'0')}</div>
+          <div class="ticket-instruction">Buka halaman voting → ketik kode ini → pilih paslon. Kode hanya dapat digunakan 1 kali. Jangan dibagikan.</div>
+        </div>
       `;
       grid.appendChild(div);
     });
@@ -138,7 +152,7 @@
 
   async function startImport() {
     if (DEMO_MODE) {
-      log('⚠️ Kamu sedang di DEMO MODE. Buka halaman tanpa ?demo=1 untuk import ke Firestore sungguhan.', 'err');
+      log('⚠️ Kamu sedang di DEMO MODE. Buka tanpa ?demo=1 untuk import ke Firestore.', 'err');
       return;
     }
     const btn = document.getElementById('btnStart');
@@ -160,7 +174,10 @@
       const toWrite = checks.filter(Boolean);
       if (toWrite.length > 0) {
         const batch = db.batch();
-        toWrite.forEach(tok => batch.set(db.collection('tokens').doc(tok), { used: false, usedAt: null, role: 'guru' }));
+        toWrite.forEach(tok => batch.set(
+          db.collection('tokens').doc(tok),
+          { used: false, usedAt: null, role: 'guru' }
+        ));
         try { await batch.commit(); ok += toWrite.length; }
         catch(e) { fail += toWrite.length; log(`✗ Batch error: ${e.message}`, 'err'); }
       }
@@ -170,11 +187,12 @@
       document.getElementById('fill').style.width = pct + '%';
       document.getElementById('progress').textContent =
         `Progress: ${Math.min(i + chunk.length, total)}/${total} (${pct}%) — ✓ ${ok} ditulis · ⊙ ${skip} sudah ada · ✗ ${fail} gagal`;
-      log(`Batch ${Math.floor(i/CHUNK)+1}: ${toWrite.length} ditulis, ${chunk.length - toWrite.length} dilewati`, 'ok');
+      log(`Batch: ${toWrite.length} ditulis, ${chunk.length - toWrite.length} dilewati`, 'ok');
       await new Promise(r => setTimeout(r, 300));
     }
 
-    log(`\n✅ SELESAI: ${ok} token guru berhasil diimport!`, 'ok');
+    log(`\n✅ SELESAI: ${ok} token guru berhasil diimport ke Firestore!`, 'ok');
+    document.getElementById('progress').textContent = `✅ Selesai! ${ok} token siap dipakai.`;
     btn.textContent = '✅ Import Selesai';
   }
 </script>
