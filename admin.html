@@ -1,0 +1,1105 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Panel Panitia · MPK 2026</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <style>
+      .admin-page {
+        padding: 3rem 0 5rem;
+      }
+      .admin-container {
+        display: none;
+      }
+      .admin-container.active {
+        display: block;
+      }
+      .login-container {
+        max-width: 430px;
+        margin: 5rem auto;
+        padding: 2rem;
+      }
+      .login-container h1 {
+        color: var(--navy);
+        font-size: 2.3rem;
+      }
+      .login-container p {
+        margin: 0.7rem 0 1.5rem;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+      }
+      .admin-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+      .admin-top h1 {
+        color: var(--navy);
+        font-size: clamp(2.3rem, 4vw, 3.6rem);
+      }
+      .admin-top p {
+        margin-top: 0.65rem;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+      }
+      .session-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+      }
+      .status-control {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.7rem 1rem;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-full);
+        background: #fffdf8;
+        font-size: 0.75rem;
+        font-weight: 800;
+      }
+      .status-text {
+        color: var(--success);
+      }
+      .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 46px;
+        height: 26px;
+      }
+      .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .slider {
+        position: absolute;
+        inset: 0;
+        border-radius: 99px;
+        cursor: pointer;
+        background: rgba(16, 34, 59, 0.16);
+        transition: 0.25s;
+      }
+      .slider::before {
+        content: "";
+        position: absolute;
+        left: 3px;
+        bottom: 3px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #fff;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        transition: 0.25s;
+      }
+      .toggle-switch input:checked + .slider {
+        background: var(--success);
+      }
+      .toggle-switch input:checked + .slider::before {
+        transform: translateX(20px);
+      }
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.2rem;
+      }
+      .stat-card {
+        padding: 1.25rem;
+        border: 1px solid rgba(16, 34, 59, 0.08);
+        border-radius: var(--radius-md);
+        background: var(--paper);
+        box-shadow: var(--shadow-sm);
+      }
+      .stat-card small {
+        color: var(--text-muted);
+        font-size: 0.68rem;
+        font-weight: 800;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+      }
+      .stat-card b {
+        display: block;
+        margin-top: 0.5rem;
+        color: var(--navy);
+        font: 700 2.3rem var(--font-display);
+        line-height: 1;
+      }
+      .stat-card:nth-child(2) b {
+        color: var(--green);
+      }
+      .stat-card:nth-child(3) b {
+        color: var(--gold);
+      }
+      .stat-card:nth-child(4) b {
+        color: var(--red);
+      }
+      .admin-grid {
+        display: grid;
+        grid-template-columns: 1.45fr 0.85fr;
+        gap: 1.2rem;
+        margin-top: 1.2rem;
+      }
+      .panel {
+        padding: 1.4rem;
+        border: 1px solid rgba(16, 34, 59, 0.09);
+        border-radius: var(--radius-lg);
+        background: var(--surface);
+        box-shadow: var(--shadow-sm);
+      }
+      .panel h2 {
+        color: var(--navy);
+        font-size: 1.55rem;
+      }
+      .panel-note {
+        margin-top: 0.35rem;
+        color: var(--text-muted);
+        font-size: 0.75rem;
+      }
+      .panel-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin: 1.2rem 0 0.7rem;
+      }
+      .toolbar .form-control {
+        min-height: 42px;
+        padding: 0.6rem 0.75rem;
+        font-size: 0.78rem;
+      }
+      .toolbar input {
+        flex: 1;
+        min-width: 155px;
+      }
+      .toolbar select {
+        width: 130px;
+      }
+      .toolbar .btn {
+        min-height: 42px;
+        padding: 0.55rem 0.8rem;
+        font-size: 0.72rem;
+      }
+      .nisn-list {
+        display: grid;
+        max-height: 445px;
+        overflow: auto;
+        border-top: 1px solid var(--line);
+      }
+      .nisn-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.85rem 0.2rem;
+        border-bottom: 1px solid var(--line);
+      }
+      .nisn-code {
+        color: var(--navy);
+        font: 500 0.9rem var(--font-mono);
+      }
+      .nisn-time {
+        display: block;
+        margin-top: 0.18rem;
+        color: var(--text-muted);
+        font-size: 0.63rem;
+      }
+      .badge {
+        display: inline-flex;
+        padding: 0.32rem 0.55rem;
+        border-radius: 99px;
+        font-size: 0.62rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+      }
+      .badge-ready {
+        color: var(--green);
+        background: rgba(35, 122, 103, 0.1);
+      }
+      .badge-used {
+        color: var(--danger);
+        background: rgba(182, 47, 67, 0.1);
+      }
+      .empty {
+        padding: 2.5rem 1rem;
+        color: var(--text-muted);
+        text-align: center;
+        font-size: 0.82rem;
+      }
+      .side-stack {
+        display: grid;
+        gap: 1.2rem;
+      }
+      .bulk-input {
+        min-height: 145px;
+        border-radius: var(--radius-sm);
+        resize: vertical;
+      }
+      .bulk-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.8rem;
+        margin-top: 0.8rem;
+      }
+      .bulk-actions small {
+        color: var(--text-muted);
+        font-size: 0.65rem;
+      }
+      .settings-panel {
+        grid-column: 1 / -1;
+      }
+      .settings-form {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin-top: 1.1rem;
+      }
+      .settings-form .form-group {
+        margin: 0;
+      }
+      .settings-form .form-control {
+        border-radius: var(--radius-sm);
+      }
+      .settings-wide {
+        grid-column: 1 / -1;
+      }
+      .settings-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        padding-top: 0.2rem;
+      }
+      .checkbox-control {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        color: var(--text-muted);
+        font-size: 0.76rem;
+        font-weight: 700;
+      }
+      .checkbox-control input {
+        width: 17px;
+        height: 17px;
+        accent-color: var(--navy);
+      }
+      .file-input {
+        display: none;
+      }
+      .file-name {
+        display: block;
+        max-width: 190px;
+        overflow: hidden;
+        color: var(--text-muted);
+        font-size: 0.65rem;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .modal-content .modal-icon {
+        display: grid;
+        place-items: center;
+        width: 48px;
+        height: 48px;
+        margin: 0 auto 0.8rem;
+        border-radius: 50%;
+        background: rgba(198, 154, 66, 0.15);
+        color: var(--gold);
+        font-size: 1.3rem;
+      }
+      .modal-content.danger-modal .modal-icon {
+        background: rgba(182, 47, 67, 0.12);
+        color: var(--danger);
+      }
+      .modal-content .modal-body {
+        color: var(--text-muted);
+        text-align: left;
+      }
+      .modal-content .modal-body p {
+        margin-bottom: 1rem;
+        font-size: 0.84rem;
+      }
+      .danger-panel {
+        border-color: rgba(182, 47, 67, 0.25);
+        background: linear-gradient(
+          135deg,
+          rgba(182, 47, 67, 0.06),
+          rgba(255, 253, 248, 0.8)
+        );
+      }
+      .danger-panel h2 {
+        color: var(--danger);
+      }
+      .danger-panel p {
+        margin: 0.55rem 0 1rem;
+        color: var(--text-muted);
+        font-size: 0.76rem;
+      }
+      .danger-panel .form-control {
+        border-color: rgba(182, 47, 67, 0.28);
+      }
+      .danger-panel .btn {
+        width: 100%;
+        margin-top: 0.7rem;
+      }
+      .reset-list {
+        display: grid;
+        gap: 0.3rem;
+        margin: 0.8rem 0;
+        color: var(--text-muted);
+        font-size: 0.7rem;
+      }
+      .reset-list span::before {
+        content: "×";
+        display: inline-grid;
+        place-items: center;
+        width: 14px;
+        height: 14px;
+        margin-right: 0.4rem;
+        border-radius: 50%;
+        background: rgba(182, 47, 67, 0.12);
+        color: var(--danger);
+        font-weight: 800;
+      }
+      @media (max-width: 900px) {
+        .stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .admin-grid {
+          grid-template-columns: 1fr;
+        }
+        .side-stack {
+          grid-template-columns: 1fr 1fr;
+        }
+        .admin-top {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+      }
+      @media (max-width: 600px) {
+        .admin-page {
+          padding-top: 2.2rem;
+        }
+        .stats-grid,
+        .side-stack {
+          grid-template-columns: 1fr;
+        }
+        .session-actions {
+          width: 100%;
+          justify-content: space-between;
+        }
+        .panel {
+          padding: 1.1rem;
+        }
+        .toolbar {
+          flex-direction: column;
+        }
+        .toolbar input,
+        .toolbar select,
+        .toolbar .btn {
+          width: 100%;
+        }
+        .bulk-actions {
+          align-items: stretch;
+          flex-direction: column;
+        }
+        .nisn-row {
+          padding: 0.8rem 0;
+        }
+        .settings-form {
+          grid-template-columns: 1fr;
+        }
+        .settings-wide {
+          grid-column: auto;
+        }
+        .settings-actions {
+          align-items: stretch;
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="particles-bg"></div>
+    <header class="header">
+      <div class="container header-inner">
+        <a class="brand" href="index.html"
+          ><img src="assets/man3jember-logo.png" alt="Logo MAN 3 Jember" /><span
+            class="brand-copy"
+            ><strong>MPK MAN 3 JEMBER</strong
+            ><span>Panel Panitia · 2026</span></span
+          ></a
+        ><a href="index.html" class="btn btn-outline">Ke web utama</a>
+      </div>
+    </header>
+    <main class="container admin-page">
+      <section class="glass-card login-container" id="loginSection">
+        <p class="eyebrow">Akses terbatas</p>
+        <h1>Panel panitia.</h1>
+        <p>
+          Kelola NISN pemilih, pantau partisipasi, dan kendalikan sesi voting
+          dari satu tempat.
+        </p>
+        <form id="adminForm">
+          <label class="form-label" for="adminPass">PASSWORD ADMIN</label
+          ><input
+            type="password"
+            id="adminPass"
+            class="form-control"
+            placeholder="Masukkan password"
+            required
+          /><button
+            type="submit"
+            class="btn btn-primary"
+            style="width: 100%; margin-top: 1rem"
+          >
+            Masuk ke dashboard <span>→</span>
+          </button>
+        </form>
+      </section>
+      <section class="admin-container" id="adminDashboard">
+        <div class="admin-top">
+          <div>
+            <p class="eyebrow">Control center</p>
+            <div class="gold-rule"></div>
+            <h1>Dashboard panitia.</h1>
+            <p>Status dan data pemilih diperbarui otomatis.</p>
+          </div>
+          <div class="session-actions">
+            <div class="status-control">
+              <span>Status voting</span
+              ><label class="toggle-switch"
+                ><input type="checkbox" id="toggleVoting" /><span
+                  class="slider"
+                ></span></label
+              ><span class="status-text" id="statusLabel">DIBUKA</span>
+            </div>
+            <button class="btn btn-outline" id="btnLogout">Keluar</button>
+          </div>
+        </div>
+        <section class="stats-grid">
+          <article class="stat-card">
+            <small>NISN terdaftar</small><b id="statTotal">0</b>
+          </article>
+          <article class="stat-card">
+            <small>Sudah memilih</small><b id="statUsed">0</b>
+          </article>
+          <article class="stat-card">
+            <small>Belum memilih</small><b id="statUnused">0</b>
+          </article>
+          <article class="stat-card">
+            <small>Partisipasi</small><b id="statTurnout">0%</b>
+          </article>
+        </section>
+        <section class="admin-grid">
+          <article class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>Daftar pemilih</h2>
+                <p class="panel-note">
+                  Gunakan pencarian atau filter untuk memeriksa status NISN.
+                </p>
+              </div>
+              <button class="btn btn-primary" id="btnAddNisn">
+                + Tambah NISN
+              </button>
+            </div>
+            <div class="toolbar">
+              <input
+                class="form-control"
+                id="searchNisn"
+                type="search"
+                placeholder="Cari 10 digit NISN…"
+              /><select class="form-control" id="filterStatus">
+                <option value="all">Semua status</option>
+                <option value="ready">Belum memilih</option>
+                <option value="used">Sudah memilih</option></select
+              ><button class="btn btn-outline" id="btnExport">
+                Export CSV
+              </button>
+            </div>
+            <div class="nisn-list" id="nisnList"></div>
+          </article>
+          <aside class="side-stack">
+            <article class="panel">
+              <h2>Impor NISN</h2>
+              <p class="panel-note">
+                Tempel daftar NISN 10 digit; satu NISN per baris atau dari CSV.
+              </p>
+              <textarea
+                class="form-control bulk-input"
+                id="bulkNisn"
+                placeholder="0090000001&#10;0090000002&#10;0090000003"
+              ></textarea>
+              <div class="bulk-actions">
+                <small id="bulkHint">NISN yang sudah ada akan dilewati.</small>
+                <div style="display: flex; gap: 0.5rem; align-items: center">
+                  <input
+                    class="file-input"
+                    id="bulkFile"
+                    type="file"
+                    accept=".csv,.txt,text/csv,text/plain"
+                  /><button
+                    class="btn btn-outline"
+                    id="btnChooseFile"
+                    type="button"
+                  >
+                    Pilih file</button
+                  ><button class="btn btn-primary" id="btnBulkImport">
+                    Impor daftar
+                  </button>
+                </div>
+              </div>
+              <small class="file-name" id="fileName"
+                >Belum ada file dipilih.</small
+              >
+            </article>
+            <article class="panel danger-panel">
+              <h2>Reset database voting</h2>
+              <p>
+                Menghapus seluruh NISN, suara, aspirasi, dan konfigurasi sesi
+                dari aplikasi MPK ini. Kandidat diinisialisasi kembali dengan 0
+                suara dan voting ditutup.
+              </p>
+              <div class="reset-list">
+                <span>Daftar NISN pemilih</span><span>Rekap suara kandidat</span
+                ><span>Aspirasi anonim</span><span>Pengaturan voting</span>
+              </div>
+              <button class="btn btn-danger" id="btnReset">
+                Reset seluruh data voting
+              </button>
+            </article>
+          </aside>
+          <article class="panel settings-panel">
+            <h2>Pengaturan tampilan & sesi</h2>
+            <p class="panel-note">
+              Atur informasi publik tanpa mengubah kode. Perubahan langsung
+              diterapkan pada halaman pemilih.
+            </p>
+            <form class="settings-form" id="settingsForm">
+              <div class="form-group">
+                <label class="form-label" for="settingTitle"
+                  >JUDUL PEMILIHAN</label
+                ><input class="form-control" id="settingTitle" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="settingYear"
+                  >PERIODE / TAHUN</label
+                ><input class="form-control" id="settingYear" required />
+              </div>
+              <div class="form-group settings-wide">
+                <label class="form-label" for="settingMessage"
+                  >PESAN PEMBUKA</label
+                ><input class="form-control" id="settingMessage" required />
+              </div>
+              <div class="form-group settings-wide">
+                <label class="form-label" for="settingResultsMessage"
+                  >PESAN SAAT HASIL DISEMBUNYIKAN</label
+                ><input
+                  class="form-control"
+                  id="settingResultsMessage"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="settingCountdown"
+                  >WAKTU PENUTUPAN VOTING</label
+                ><input
+                  class="form-control"
+                  id="settingCountdown"
+                  type="datetime-local"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">VISIBILITAS HASIL</label
+                ><label class="checkbox-control"
+                  ><input id="settingResults" type="checkbox" /> Tampilkan hasil
+                  realtime kepada siswa</label
+                >
+              </div>
+              <div class="form-group">
+                <label class="form-label">ASPIRASI PEMILIH</label
+                ><label class="checkbox-control"
+                  ><input id="settingAspirasi" type="checkbox" /> Tampilkan
+                  aspirasi anonim di hasil</label
+                >
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="settingPrimary"
+                  >WARNA UTAMA</label
+                ><input class="form-control" id="settingPrimary" type="color" />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="settingAccent">WARNA AKSEN</label
+                ><input class="form-control" id="settingAccent" type="color" />
+              </div>
+              <div class="settings-wide settings-actions">
+                <small class="panel-note"
+                  >Waktu menggunakan zona waktu perangkat panitia.</small
+                ><button
+                  class="btn btn-primary"
+                  type="submit"
+                  id="btnSaveSettings"
+                >
+                  Simpan pengaturan
+                </button>
+              </div>
+            </form>
+          </article>
+        </section>
+      </section>
+    </main>
+    <div class="modal-overlay" id="nisnModal">
+      <div class="modal-content">
+        <div class="modal-icon">+</div>
+        <div class="modal-header">
+          <p class="eyebrow">Tambah pemilih</p>
+          <h2 style="font-size: 2rem; color: var(--navy); margin-top: 0.3rem">
+            Tambah NISN
+          </h2>
+        </div>
+        <form id="nisnForm" class="modal-body">
+          <p>Daftarkan satu NISN siswa ke daftar pemilih.</p>
+          <label class="form-label" for="modalNisn">NISN 10 DIGIT</label
+          ><input
+            class="form-control"
+            id="modalNisn"
+            inputmode="numeric"
+            maxlength="10"
+            pattern="[0-9]{10}"
+            placeholder="Contoh: 0090000001"
+            required
+          />
+          <div class="modal-actions" style="margin-top: 1.2rem">
+            <button
+              type="button"
+              class="btn btn-outline"
+              data-close-modal="nisnModal"
+            >
+              Batal</button
+            ><button class="btn btn-primary" type="submit" id="btnSaveNisn">
+              Simpan NISN
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="modal-overlay" id="resetModal">
+      <div class="modal-content danger-modal">
+        <div class="modal-icon">!</div>
+        <div class="modal-header">
+          <p class="eyebrow" style="color: var(--danger)">Tindakan permanen</p>
+          <h2 style="font-size: 2rem; color: var(--navy); margin-top: 0.3rem">
+            Reset data voting?
+          </h2>
+        </div>
+        <form id="resetForm" class="modal-body">
+          <p>
+            Seluruh NISN, suara, aspirasi, serta pengaturan acara akan dihapus.
+            Voting akan ditutup setelah reset selesai.
+          </p>
+          <label class="form-label" for="modalResetPhrase"
+            >KETIK <b>RESET MPK 2026</b> UNTUK KONFIRMASI</label
+          ><input
+            class="form-control"
+            id="modalResetPhrase"
+            autocomplete="off"
+            placeholder="RESET MPK 2026"
+            required
+          />
+          <div class="modal-actions" style="margin-top: 1.2rem">
+            <button
+              type="button"
+              class="btn btn-outline"
+              data-close-modal="resetModal"
+            >
+              Batal</button
+            ><button class="btn btn-danger" type="submit" id="btnConfirmReset">
+              Ya, reset data
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const $ = (id) => document.getElementById(id);
+        let voters = {};
+        let eventSettings = { ...DEFAULT_VOTING_SETTINGS };
+        let initialized = false;
+        const openModal = (id) => $(id).classList.add("active");
+        const closeModal = (id) => {
+          $(id).classList.remove("active");
+          const form = $(id).querySelector("form");
+          if (form) form.reset();
+        };
+        const toDateTimeLocal = (value) => {
+          const date = new Date(
+            value || DEFAULT_VOTING_SETTINGS.countdownTarget,
+          );
+          const offset = date.getTimezoneOffset() * 60000;
+          return new Date(date.getTime() - offset).toISOString().slice(0, 16);
+        };
+        const fillSettings = (settings = {}) => {
+          eventSettings = { ...DEFAULT_VOTING_SETTINGS, ...settings };
+          $("settingTitle").value = eventSettings.votingTitle;
+          $("settingYear").value = eventSettings.votingYear;
+          $("settingMessage").value = eventSettings.heroMessage;
+          $("settingCountdown").value = toDateTimeLocal(
+            eventSettings.countdownTarget,
+          );
+          $("settingResults").checked = eventSettings.resultsVisible !== false;
+          $("settingAspirasi").checked = eventSettings.showAspirasi !== false;
+          $("settingResultsMessage").value = eventSettings.resultsMessage;
+          $("settingPrimary").value = eventSettings.primaryColor;
+          $("settingAccent").value = eventSettings.accentColor;
+        };
+        const status = (open) => {
+          $("toggleVoting").checked = open;
+          $("statusLabel").textContent = open ? "DIBUKA" : "DITUTUP";
+          $("statusLabel").style.color = open
+            ? "var(--success)"
+            : "var(--danger)";
+        };
+        const formatTime = (value) => {
+          if (!value) return "Belum digunakan";
+          const date = value.toDate ? value.toDate() : new Date(value);
+          return `Dipakai ${date.toLocaleDateString("id-ID")} · ${date.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}`;
+        };
+        const render = () => {
+          const query = $("searchNisn").value.trim();
+          const filter = $("filterStatus").value;
+          const list = Object.entries(voters)
+            .sort(([a], [b]) => a.localeCompare(b))
+            .filter(
+              ([nisn, data]) =>
+                (!query || nisn.includes(query)) &&
+                (filter === "all" ||
+                  (filter === "used" ? data.used : !data.used)),
+            );
+          const all = Object.values(voters),
+            used = all.filter((v) => v.used).length,
+            total = all.length;
+          $("statTotal").textContent = total;
+          $("statUsed").textContent = used;
+          $("statUnused").textContent = total - used;
+          $("statTurnout").textContent =
+            `${total ? Math.round((used / total) * 100) : 0}%`;
+          $("nisnList").innerHTML = list.length
+            ? list
+                .map(
+                  ([nisn, data]) =>
+                    `<div class="nisn-row"><div><strong class="nisn-code">${nisn}</strong><span class="nisn-time">${formatTime(data.usedAt)}</span></div><span class="badge ${data.used ? "badge-used" : "badge-ready"}">${data.used ? "SUDAH MEMILIH" : "SIAP MEMILIH"}</span></div>`,
+                )
+                .join("")
+            : '<p class="empty">Tidak ada NISN yang sesuai.</p>';
+        };
+        const saveNisns = async (nisns) => {
+          const unique = [
+            ...new Set(
+              nisns.map((n) => n.trim()).filter((n) => /^\d{10}$/.test(n)),
+            ),
+          ];
+          if (!unique.length)
+            throw new Error("Tidak ada NISN 10 digit yang valid.");
+          if (DEMO_MODE) {
+            const data = Store.get("mpk26_tokens") || {};
+            let added = 0;
+            unique.forEach((n) => {
+              if (!data[n]) {
+                data[n] = { used: false, usedAt: null };
+                added++;
+              }
+            });
+            Store.set("mpk26_tokens", data);
+            voters = data;
+            render();
+            return { added, skipped: unique.length - added };
+          }
+          const refs = await Promise.all(
+            unique.map((n) => db.collection("tokens").doc(n).get()),
+          );
+          const newNisns = unique.filter((n, i) => !refs[i].exists);
+          for (let i = 0; i < newNisns.length; i += 400) {
+            const batch = db.batch();
+            newNisns.slice(i, i + 400).forEach((n) =>
+              batch.set(db.collection("tokens").doc(n), {
+                used: false,
+                usedAt: null,
+              }),
+            );
+            await batch.commit();
+          }
+          return {
+            added: newNisns.length,
+            skipped: unique.length - newNisns.length,
+          };
+        };
+        const deleteCollection = async (collection) => {
+          while (true) {
+            const snap = await db.collection(collection).limit(300).get();
+            if (snap.empty) break;
+            const batch = db.batch();
+            snap.docs.forEach((doc) => batch.delete(doc.ref));
+            await batch.commit();
+          }
+        };
+        const resetFirestore = async () => {
+          await Promise.all(
+            ["tokens", "candidates", "aspirasi", "settings"].map(
+              deleteCollection,
+            ),
+          );
+          const batch = db.batch();
+          CANDIDATES.forEach((c) =>
+            batch.set(db.collection("candidates").doc(c.id), { voteCount: 0 }),
+          );
+          batch.set(db.collection("settings").doc("config"), {
+            isOpen: false,
+            ...DEFAULT_VOTING_SETTINGS,
+            resetAt: firebase.firestore.FieldValue.serverTimestamp(),
+          });
+          await batch.commit();
+        };
+        const load = () => {
+          if (initialized) return;
+          initialized = true;
+          if (DEMO_MODE) {
+            demoInit();
+            voters = Store.get("mpk26_tokens") || {};
+            status(Boolean(Store.get("mpk26_isOpen")));
+            fillSettings(Store.get("mpk26_settings", {}));
+            $("toggleVoting").onchange = (e) => {
+              Store.set("mpk26_isOpen", e.target.checked);
+              status(e.target.checked);
+            };
+            render();
+            return;
+          }
+          db.collection("settings")
+            .doc("config")
+            .onSnapshot((doc) => {
+              const data = doc.exists ? doc.data() : {};
+              const open = doc.exists ? Boolean(data.isOpen) : false;
+              status(open);
+              fillSettings(data);
+            });
+          db.collection("tokens").onSnapshot((snap) => {
+            voters = {};
+            snap.forEach((doc) => (voters[doc.id] = doc.data()));
+            render();
+          });
+          $("toggleVoting").onchange = (e) =>
+            db
+              .collection("settings")
+              .doc("config")
+              .set({ isOpen: e.target.checked }, { merge: true })
+              .then(() =>
+                showToast(
+                  e.target.checked ? "Voting dibuka." : "Voting ditutup.",
+                ),
+              )
+              .catch(() => showToast("Gagal mengubah status voting.", "error"));
+        };
+        const dashboard = () => {
+          $("loginSection").style.display = "none";
+          $("adminDashboard").classList.add("active");
+          load();
+        };
+        if (sessionStorage.getItem("mpk26_admin")) dashboard();
+        $("adminForm").onsubmit = (e) => {
+          e.preventDefault();
+          if ($("adminPass").value !== ADMIN_PASSWORD)
+            return showToast("Password admin salah.", "error");
+          sessionStorage.setItem("mpk26_admin", "true");
+          dashboard();
+          showToast("Login panitia berhasil.");
+        };
+        $("searchNisn").oninput = render;
+        $("filterStatus").onchange = render;
+        $("btnLogout").onclick = () => {
+          sessionStorage.removeItem("mpk26_admin");
+          location.reload();
+        };
+        document.querySelectorAll("[data-close-modal]").forEach((button) => {
+          button.onclick = () => closeModal(button.dataset.closeModal);
+        });
+        document.querySelectorAll(".modal-overlay").forEach((modal) => {
+          modal.onclick = (e) => {
+            if (e.target === modal) closeModal(modal.id);
+          };
+        });
+        $("btnAddNisn").onclick = () => {
+          openModal("nisnModal");
+          setTimeout(() => $("modalNisn").focus(), 80);
+        };
+        $("nisnForm").onsubmit = async (e) => {
+          e.preventDefault();
+          const nisn = $("modalNisn").value.trim();
+          const btn = $("btnSaveNisn");
+          btn.disabled = true;
+          btn.textContent = "Menyimpan…";
+          try {
+            const out = await saveNisns([nisn]);
+            showToast(
+              out.added
+                ? "NISN berhasil ditambahkan."
+                : "NISN sudah terdaftar.",
+              out.added ? "success" : "error",
+            );
+            if (out.added) closeModal("nisnModal");
+          } catch (err) {
+            showToast(err.message, "error");
+          }
+          btn.disabled = false;
+          btn.textContent = "Simpan NISN";
+        };
+        $("btnChooseFile").onclick = () => $("bulkFile").click();
+        $("bulkFile").onchange = async (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          if (file.size > 2 * 1024 * 1024) {
+            showToast("Ukuran file maksimal 2 MB.", "error");
+            return;
+          }
+          $("fileName").textContent = file.name;
+          try {
+            $("bulkNisn").value = await file.text();
+            showToast("File siap diimpor.");
+          } catch {
+            showToast("File tidak dapat dibaca.", "error");
+          }
+        };
+        $("btnBulkImport").onclick = async () => {
+          const btn = $("btnBulkImport"),
+            raw = $("bulkNisn").value,
+            nisns = raw.match(/\b\d{10}\b/g) || [];
+          btn.disabled = true;
+          btn.textContent = "Mengimpor…";
+          try {
+            const out = await saveNisns(nisns);
+            $("bulkNisn").value = "";
+            showToast(
+              `${out.added} NISN ditambahkan${out.skipped ? `, ${out.skipped} dilewati` : ""}.`,
+            );
+          } catch (err) {
+            showToast(err.message, "error");
+          }
+          btn.disabled = false;
+          btn.textContent = "Impor daftar";
+        };
+        $("btnExport").onclick = () => {
+          let csv = "NISN,Status,Waktu Dipakai\n";
+          Object.entries(voters)
+            .sort(([a], [b]) => a.localeCompare(b))
+            .forEach(
+              ([n, v]) =>
+                (csv += `${n},${v.used ? "Sudah Memilih" : "Belum Memilih"},${v.usedAt ? formatTime(v.usedAt) : ""}\n`),
+            );
+          const url = URL.createObjectURL(
+              new Blob([csv], { type: "text/csv;charset=utf-8" }),
+            ),
+            a = document.createElement("a");
+          a.href = url;
+          a.download = "Rekap_NISN_MPK26.csv";
+          a.click();
+          URL.revokeObjectURL(url);
+        };
+        $("settingsForm").onsubmit = async (e) => {
+          e.preventDefault();
+          const btn = $("btnSaveSettings");
+          const next = {
+            votingTitle: $("settingTitle").value.trim(),
+            votingYear: $("settingYear").value.trim(),
+            heroMessage: $("settingMessage").value.trim(),
+            countdownTarget: $("settingCountdown").value,
+            resultsVisible: $("settingResults").checked,
+            showAspirasi: $("settingAspirasi").checked,
+            resultsMessage: $("settingResultsMessage").value.trim(),
+            primaryColor: $("settingPrimary").value,
+            accentColor: $("settingAccent").value,
+          };
+          if (
+            !next.votingTitle ||
+            !next.votingYear ||
+            !next.heroMessage ||
+            !next.countdownTarget ||
+            !next.resultsMessage
+          )
+            return showToast("Lengkapi seluruh pengaturan acara.", "error");
+          btn.disabled = true;
+          btn.textContent = "Menyimpan…";
+          try {
+            if (DEMO_MODE) {
+              Store.set("mpk26_settings", next);
+              fillSettings(next);
+              applyVotingSettings(next);
+            } else
+              await db
+                .collection("settings")
+                .doc("config")
+                .set(next, { merge: true });
+            showToast("Pengaturan acara berhasil disimpan.");
+          } catch (err) {
+            console.error(err);
+            showToast("Gagal menyimpan pengaturan.", "error");
+          }
+          btn.disabled = false;
+          btn.textContent = "Simpan pengaturan";
+        };
+        $("btnReset").onclick = () => openModal("resetModal");
+        $("resetForm").onsubmit = async (e) => {
+          e.preventDefault();
+          if ($("modalResetPhrase").value.trim() !== "RESET MPK 2026")
+            return showToast("Frasa konfirmasi tidak sesuai.", "error");
+          const btn = $("btnConfirmReset");
+          btn.disabled = true;
+          btn.textContent = "Mereset…";
+          try {
+            if (DEMO_MODE) {
+              [
+                "mpk26_initialized",
+                "mpk26_tokens",
+                "mpk26_votes",
+                "mpk26_aspirasi",
+                "mpk26_isOpen",
+                "mpk26_settings",
+              ].forEach((k) => localStorage.removeItem(k));
+              demoInit();
+              Store.set("mpk26_isOpen", false);
+              voters = Store.get("mpk26_tokens") || {};
+              fillSettings(Store.get("mpk26_settings", {}));
+              status(false);
+              render();
+            } else await resetFirestore();
+            closeModal("resetModal");
+            showToast(
+              "Database voting berhasil direset. Voting sekarang ditutup.",
+            );
+          } catch (err) {
+            console.error(err);
+            showToast(
+              "Reset gagal. Periksa Firestore Rules dan koneksi.",
+              "error",
+            );
+          }
+          btn.disabled = false;
+          btn.textContent = "Ya, reset data";
+        };
+      });
+    </script>
+  </body>
+</html>

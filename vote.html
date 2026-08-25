@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Pilih Pasangan Calon · MPK 2026</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <style>
+      .vote-page {
+        padding: 3.5rem 0 5rem;
+      }
+      .vote-intro {
+        text-align: center;
+        max-width: 700px;
+        margin: 0 auto 2.2rem;
+      }
+      .vote-intro h1 {
+        color: var(--navy);
+        font-size: clamp(2.35rem, 5vw, 4rem);
+      }
+      .vote-intro p {
+        color: var(--text-muted);
+        margin-top: 0.8rem;
+      }
+      .voting-info {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin: 1.5rem 0 2.3rem;
+        padding: 0.9rem 1.1rem;
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        font-size: 0.72rem;
+        color: var(--text-muted);
+      }
+      .voting-info strong {
+        font-family: var(--font-mono);
+        color: var(--navy);
+      }
+      .candidates-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.3rem;
+      }
+      .candidate-card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        padding: 1.25rem;
+        overflow: hidden;
+        cursor: pointer;
+        transition:
+          transform 0.3s,
+          box-shadow 0.3s,
+          border-color 0.3s;
+      }
+      .candidate-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-lg);
+        border-color: rgba(198, 154, 66, 0.7);
+      }
+      .candidate-number {
+        position: absolute;
+        top: 1.15rem;
+        right: 1.2rem;
+        color: var(--gold);
+        font: 500 1.15rem var(--font-mono);
+      }
+      .candidate-photo {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 4 / 5;
+        height: auto;
+        border-radius: 18px;
+        overflow: hidden;
+        background: var(--navy-soft);
+        margin-bottom: 1.2rem;
+      }
+      .candidate-photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: center top;
+        filter: saturate(0.92);
+      }
+      .candidate-photo::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          180deg,
+          transparent 50%,
+          rgba(7, 26, 51, 0.28)
+        );
+        pointer-events: none;
+      }
+      .candidate-role {
+        font-size: 0.67rem;
+        font-weight: 800;
+        letter-spacing: 0.13em;
+        color: var(--red);
+        text-transform: uppercase;
+      }
+      .candidate-name {
+        font-size: 1.47rem;
+        color: var(--navy);
+        margin: 0.36rem 0;
+      }
+      .candidate-deputy {
+        font-size: 0.84rem;
+        color: var(--text-muted);
+      }
+      .candidate-deputy b {
+        color: var(--text);
+      }
+      .candidate-vision {
+        margin: 1rem 0 1.2rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--line);
+        font-size: 0.79rem;
+        color: var(--text-muted);
+        min-height: 73px;
+      }
+      .candidate-card .btn {
+        width: 100%;
+        margin-top: auto;
+      }
+      .modal-pair {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        text-align: left;
+        padding: 1rem;
+        margin: 0.2rem 0 1.25rem;
+        background: #f7f2e7;
+        border-radius: var(--radius-md);
+      }
+      .modal-photo {
+        width: 65px;
+        aspect-ratio: 4 / 5;
+        height: auto;
+        border-radius: 12px;
+        overflow: hidden;
+        flex: 0 0 auto;
+        background: var(--navy-soft);
+      }
+      .modal-photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: center top;
+      }
+      .modal-pair small {
+        font-size: 0.64rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        color: var(--red);
+      }
+      .modal-pair h3 {
+        font-family: var(--font-body);
+        font-size: 0.95rem;
+        color: var(--navy);
+        margin: 0.2rem 0;
+      }
+      .modal-pair p {
+        font-size: 0.76rem;
+        color: var(--text-muted);
+      }
+      @media (max-width: 860px) {
+        .candidates-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .candidate-card:last-child {
+          grid-column: 1/-1;
+          max-width: calc(50% - 0.65rem);
+          justify-self: center;
+          width: 100%;
+        }
+      }
+      @media (max-width: 580px) {
+        .vote-page {
+          padding-top: 2.5rem;
+        }
+        .candidates-grid {
+          grid-template-columns: 1fr;
+        }
+        .candidate-card:last-child {
+          grid-column: auto;
+          max-width: none;
+        }
+        .candidate-photo {
+          aspect-ratio: 4 / 5;
+          height: auto;
+        }
+        .voting-info {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="particles-bg"></div>
+    <header class="header">
+      <div class="container header-inner">
+        <a class="brand" href="index.html"
+          ><img src="assets/man3jember-logo.png" alt="Logo MAN 3 Jember" /><span
+            class="brand-copy"
+            ><strong>MPK MAN 3 JEMBER</strong
+            ><span>Pemilihan 2026/2027</span></span
+          ></a
+        ><button class="btn btn-outline" id="btnLogout">Keluar</button>
+      </div>
+    </header>
+    <main class="container vote-page">
+      <div class="vote-intro">
+        <p class="eyebrow">Tahap 2 dari 3 · Tentukan pilihanmu</p>
+        <div class="gold-rule" style="margin-inline: auto"></div>
+        <h1>Pilih pasangan calon.</h1>
+        <p>
+          Baca profil singkat setiap pasangan dan pilih satu yang paling
+          mewakili harapanmu untuk MPK.
+        </p>
+      </div>
+      <div class="voting-info">
+        <span class="status-pill"
+          ><i class="status-dot"></i>NISN terverifikasi</span
+        ><strong id="displayToken">—</strong
+        ><span>Penutupan: <strong id="countdownTimer">MEMUAT...</strong></span>
+      </div>
+      <section class="candidates-grid" id="candidatesContainer"></section>
+    </main>
+    <div class="modal-overlay" id="confirmModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <p class="eyebrow">Konfirmasi pilihan</p>
+          <h2 style="font-size: 2rem; color: var(--navy); margin-top: 0.35rem">
+            Sudah yakin?
+          </h2>
+        </div>
+        <div class="modal-body">
+          <div id="modalPair"></div>
+          <label class="form-label" for="aspirasiText"
+            >PESAN / HARAPAN (OPSIONAL)</label
+          ><textarea
+            id="aspirasiText"
+            class="form-control"
+            rows="3"
+            placeholder="Tuliskan harapanmu untuk MPK..."
+            style="resize: vertical"
+          ></textarea>
+          <p style="font-size: 0.75rem; color: var(--danger); margin-top: 1rem">
+            Pilihan yang dikirim tidak dapat diubah kembali.
+          </p>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-outline" id="btnCancelVote">Kembali</button
+          ><button class="btn btn-primary" id="btnConfirmVote">
+            Ya, kirim suara
+          </button>
+        </div>
+      </div>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        initCountdown("countdownTimer");
+        const token = getTokenFromSession();
+        if (!token) {
+          location.href = "index.html";
+          return;
+        }
+        if (sessionStorage.getItem("mpk26_voted")) {
+          location.href = "results.html";
+          return;
+        }
+        document.getElementById("displayToken").textContent = token;
+        const grid = document.getElementById("candidatesContainer"),
+          modal = document.getElementById("confirmModal"),
+          confirm = document.getElementById("btnConfirmVote");
+        let selected = null;
+        CANDIDATES.forEach((c) => {
+          const card = document.createElement("article");
+          card.className = "glass-card candidate-card";
+          card.innerHTML = `<span class="candidate-number">${c.order}</span><div class="candidate-photo"><img src="${c.photo}" alt="${c.chair}"></div><p class="candidate-role">Calon Ketua MPK</p><h2 class="candidate-name">${c.chair}</h2><p class="candidate-deputy">Bersama <b>${c.deputy}</b> · Calon Wakil Ketua</p><p class="candidate-vision">“${c.vision}”</p><button class="btn btn-primary">Pilih pasangan ${c.order} <span>→</span></button>`;
+          card.querySelector("button").onclick = () => select(c.id);
+          grid.appendChild(card);
+        });
+        function select(id) {
+          selected = id;
+          const c = getCandidateById(id);
+          document.getElementById("modalPair").innerHTML =
+            `<div class="modal-pair"><div class="modal-photo"><img src="${c.photo}" alt=""></div><div><small>PASANGAN CALON ${c.order}</small><h3>${c.chair}</h3><p>Ketua · bersama ${c.deputy}, Wakil Ketua</p></div></div>`;
+          modal.classList.add("active");
+        }
+        document.getElementById("btnCancelVote").onclick = () => {
+          modal.classList.remove("active");
+          selected = null;
+        };
+        confirm.onclick = () => {
+          if (!selected) return;
+          confirm.disabled = true;
+          confirm.innerHTML = '<span class="loader"></span>';
+          const aspiration = document
+              .getElementById("aspirasiText")
+              .value.trim(),
+            finish = () => {
+              sessionStorage.setItem("mpk26_voted", "true");
+              showToast("Suara kamu telah tersimpan.");
+              setTimeout(() => (location.href = "results.html"), 800);
+            };
+          if (DEMO_MODE) {
+            setTimeout(() => {
+              const tokens = Store.get("mpk26_tokens") || {};
+              if (!tokens[token] || tokens[token].used) {
+                showToast(
+                  "NISN sudah tidak valid atau telah digunakan.",
+                  "error",
+                );
+                clearSession();
+                setTimeout(() => (location.href = "index.html"), 800);
+                return;
+              }
+              tokens[token] = { used: true, usedAt: new Date().toISOString() };
+              Store.set("mpk26_tokens", tokens);
+              const votes = Store.get("mpk26_votes") || {};
+              votes[selected] = (votes[selected] || 0) + 1;
+              Store.set("mpk26_votes", votes);
+              if (aspiration) {
+                const c = getCandidateById(selected),
+                  data = Store.get("mpk26_aspirasi") || [];
+                data.unshift({
+                  candidateId: selected,
+                  candidateName: c.shortName,
+                  text: aspiration,
+                  timestamp: Date.now(),
+                });
+                Store.set("mpk26_aspirasi", data);
+              }
+              finish();
+            }, 500);
+            return;
+          }
+          const tr = db.runTransaction(async (tx) => {
+            const tRef = db.collection("tokens").doc(token),
+              cRef = db.collection("candidates").doc(selected),
+              aRef = db.collection("aspirasi").doc(),
+              t = await tx.get(tRef);
+            if (!t.exists || t.data().used) throw Error("INVALID");
+            const c = await tx.get(cRef);
+            tx.update(tRef, {
+              used: true,
+              usedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            });
+            tx.set(
+              cRef,
+              { voteCount: (c.exists ? c.data().voteCount || 0 : 0) + 1 },
+              { merge: true },
+            );
+            if (aspiration) {
+              const cc = getCandidateById(selected);
+              tx.set(aRef, {
+                candidateId: selected,
+                candidateName: cc.shortName,
+                text: aspiration,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+              });
+            }
+          });
+          tr.then(finish).catch(() => {
+            showToast("Gagal mengirim suara. Coba lagi.", "error");
+            confirm.disabled = false;
+            confirm.textContent = "Ya, kirim suara";
+          });
+        };
+        document.getElementById("btnLogout").onclick = () => {
+          clearSession();
+          location.href = "index.html";
+        };
+      });
+    </script>
+  </body>
+</html>

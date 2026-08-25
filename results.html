@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Hasil Pemilihan MPK 2026</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <style>
+      .results {
+        padding: 3.5rem 0 5rem;
+        max-width: 940px;
+      }
+      .result-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        gap: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--line);
+      }
+      .result-head h1 {
+        font-size: clamp(2.2rem, 5vw, 3.7rem);
+        color: var(--navy);
+      }
+      .result-head p {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+      }
+      .total {
+        text-align: right;
+      }
+      .total b {
+        display: block;
+        color: var(--gold);
+        font: 700 3.5rem var(--font-display);
+        line-height: 0.9;
+      }
+      .total span {
+        font-size: 0.68rem;
+        color: var(--text-muted);
+        font-weight: 800;
+        letter-spacing: 0.12em;
+      }
+      .live {
+        margin-top: 1rem;
+      }
+      .results-private {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        align-items: center;
+        gap: 1.3rem;
+        margin-top: 2rem;
+        padding: clamp(1.3rem, 4vw, 2.2rem);
+        overflow: hidden;
+        border: 1px solid rgba(198, 154, 66, 0.34);
+        border-radius: var(--radius-lg);
+        background: linear-gradient(
+          125deg,
+          rgba(255, 253, 248, 0.96),
+          rgba(242, 215, 151, 0.3)
+        );
+        box-shadow: var(--shadow-sm);
+      }
+      .private-orbit {
+        position: relative;
+        display: grid;
+        place-items: center;
+        width: 76px;
+        height: 76px;
+        border: 1px solid rgba(198, 154, 66, 0.45);
+        border-radius: 50%;
+        color: var(--gold);
+        background: rgba(255, 255, 255, 0.65);
+        font-size: 1.45rem;
+      }
+      .private-orbit::before,
+      .private-orbit::after {
+        content: "";
+        position: absolute;
+        border: 1px solid rgba(198, 154, 66, 0.28);
+        border-radius: 50%;
+      }
+      .private-orbit::before {
+        inset: -10px;
+      }
+      .private-orbit::after {
+        inset: 10px;
+      }
+      .private-copy h2 {
+        color: var(--navy);
+        font-size: clamp(1.45rem, 3vw, 2.15rem);
+      }
+      .private-copy p {
+        margin-top: 0.45rem;
+        color: var(--text-muted);
+        font-size: 0.84rem;
+      }
+      .private-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 1rem;
+      }
+      .private-chips span {
+        padding: 0.38rem 0.58rem;
+        border: 1px solid rgba(16, 34, 59, 0.1);
+        border-radius: var(--radius-full);
+        background: rgba(255, 255, 255, 0.65);
+        color: var(--text-muted);
+        font-size: 0.64rem;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+      }
+      .private-chips i {
+        color: var(--gold);
+        font-style: normal;
+      }
+      .result-summary {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.2rem;
+        margin-top: 2rem;
+      }
+      .distribution-card {
+        padding: 1.25rem;
+        border: 1px solid rgba(16, 34, 59, 0.09);
+        border-radius: var(--radius-md);
+        background: rgba(255, 253, 248, 0.72);
+      }
+      .distribution-card {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+      }
+      .donut {
+        --distribution: conic-gradient(var(--gold) 0 100%);
+        position: relative;
+        display: grid;
+        place-items: center;
+        width: 118px;
+        aspect-ratio: 1;
+        flex: 0 0 auto;
+        border-radius: 50%;
+        background: var(--distribution);
+        transform: rotate(-90deg);
+        transition: background 1s ease;
+        box-shadow: inset 0 0 0 1px rgba(16, 34, 59, 0.08);
+      }
+      .donut::after {
+        content: "";
+        width: 74px;
+        height: 74px;
+        border-radius: 50%;
+        background: var(--paper);
+      }
+      .donut-label {
+        position: absolute;
+        z-index: 1;
+        text-align: center;
+        transform: rotate(90deg);
+      }
+      .donut-label b {
+        display: block;
+        color: var(--navy);
+        font-size: 1.1rem;
+      }
+      .donut-label span {
+        color: var(--text-muted);
+        font-size: 0.57rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+      }
+      .summary-title {
+        color: var(--text-muted);
+        font-size: 0.64rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+      }
+      .legend {
+        display: grid;
+        gap: 0.42rem;
+        margin-top: 0.65rem;
+      }
+      .legend p {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-size: 0.7rem;
+        color: var(--text-muted);
+      }
+      .legend i {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--legend);
+      }
+      .race-card {
+        margin-top: 1.2rem;
+        padding: 1.4rem;
+        border: 1px solid rgba(16, 34, 59, 0.09);
+        border-radius: var(--radius-lg);
+        background: linear-gradient(
+          145deg,
+          rgba(255, 253, 248, 0.94),
+          rgba(242, 215, 151, 0.12)
+        );
+        box-shadow: var(--shadow-sm);
+      }
+      .race-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        gap: 1rem;
+      }
+      .race-head h2 {
+        color: var(--navy);
+        font-size: 1.55rem;
+      }
+      .race-head p {
+        color: var(--text-muted);
+        font-size: 0.73rem;
+      }
+      .race-stage {
+        position: relative;
+        display: flex;
+        align-items: end;
+        justify-content: space-around;
+        height: 275px;
+        margin-top: 1.2rem;
+        padding: 1.2rem 1rem 0;
+        border-bottom: 1px solid var(--line);
+        background: repeating-linear-gradient(
+          to top,
+          transparent 0,
+          transparent 24%,
+          rgba(16, 34, 59, 0.06) 24.4%,
+          transparent 25%
+        );
+      }
+      .race-column {
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        align-items: end;
+        justify-items: center;
+        width: min(25vw, 155px);
+        height: 100%;
+        gap: 0.55rem;
+      }
+      .race-value {
+        color: var(--navy);
+        font: 700 1rem var(--font-display);
+        transition: transform 0.35s;
+      }
+      .race-column.race-up .race-value {
+        animation: score-pop 0.55s ease;
+      }
+      .race-bar-wrap {
+        display: flex;
+        align-items: end;
+        width: 100%;
+        height: 100%;
+      }
+      .race-bar {
+        width: 100%;
+        min-height: 3px;
+        border-radius: 12px 12px 0 0;
+        background: var(--race-color);
+        box-shadow: 0 -10px 22px
+          color-mix(in srgb, var(--race-color) 25%, transparent);
+        transition: height 1s cubic-bezier(0.2, 0.85, 0.2, 1);
+      }
+      .race-label {
+        max-width: 100%;
+        overflow: hidden;
+        color: var(--text-muted);
+        font-size: 0.65rem;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        text-align: center;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .race-label span {
+        display: block;
+        margin-top: 0.2rem;
+        color: var(--navy);
+        font: 500 0.65rem var(--font-mono);
+      }
+      @keyframes score-pop {
+        50% {
+          transform: translateY(-7px) scale(1.12);
+          color: var(--race-color);
+        }
+      }
+      .chart {
+        display: flex;
+        flex-direction: column;
+        gap: 0.9rem;
+        margin-top: 2rem;
+      }
+      .result-row {
+        display: grid;
+        grid-template-columns: 52px 72px 1fr auto;
+        gap: 1rem;
+        align-items: center;
+        padding: 1rem;
+        border-radius: var(--radius-md);
+        transition: 0.35s;
+      }
+      .result-row:first-child {
+        background: rgba(198, 154, 66, 0.1);
+        border: 1px solid rgba(198, 154, 66, 0.25);
+      }
+      .rank {
+        font: 500 1rem var(--font-mono);
+        color: var(--text-muted);
+        text-align: center;
+      }
+      .avatar {
+        width: 56px;
+        aspect-ratio: 4 / 5;
+        height: auto;
+        border-radius: 10px;
+        overflow: hidden;
+        background: var(--navy-soft);
+        border: 2px solid #fff;
+        box-shadow: var(--shadow-sm);
+        flex: 0 0 auto;
+      }
+      .avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: center top;
+      }
+      .result-name {
+        font-weight: 800;
+        color: var(--navy);
+        font-size: 0.92rem;
+      }
+      .result-sub {
+        color: var(--text-muted);
+        font-size: 0.72rem;
+        margin-top: 0.23rem;
+      }
+      .bar {
+        height: 9px;
+        margin-top: 0.65rem;
+        border-radius: 10px;
+        overflow: hidden;
+        background: rgba(7, 26, 51, 0.08);
+      }
+      .fill {
+        height: 100%;
+        width: 0;
+        border-radius: inherit;
+        background: var(--gold);
+        transition: width 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      .score {
+        text-align: right;
+        min-width: 64px;
+      }
+      .score b {
+        display: block;
+        color: var(--navy);
+        font-size: 1.1rem;
+      }
+      .score span {
+        color: var(--text-muted);
+        font-size: 0.67rem;
+      }
+      .aspirations {
+        margin-top: 3rem;
+        padding: 1.5rem;
+      }
+      .aspirations h2 {
+        font-size: 1.65rem;
+        color: var(--navy);
+      }
+      .aspirations > p {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        margin-top: 0.35rem;
+      }
+      .aspirasi-list {
+        display: grid;
+        gap: 0.7rem;
+        margin-top: 1.2rem;
+      }
+      .aspirasi {
+        padding: 1rem;
+        border-left: 3px solid var(--gold);
+        background: #fffdf8;
+      }
+      .aspirasi small {
+        font-size: 0.67rem;
+        color: var(--red);
+        font-weight: 800;
+      }
+      .aspirasi p {
+        font-size: 0.84rem;
+        margin-top: 0.3rem;
+      }
+      @media (max-width: 600px) {
+        .results {
+          padding-top: 2.4rem;
+        }
+        .result-head {
+          align-items: start;
+          flex-direction: column;
+        }
+        .total {
+          text-align: left;
+        }
+        .result-row {
+          grid-template-columns: 42px 54px 1fr;
+        }
+        .avatar {
+          width: 44px;
+          aspect-ratio: 4 / 5;
+          height: auto;
+        }
+        .score {
+          grid-column: 3;
+          text-align: left;
+        }
+        .result-row {
+          gap: 0.6rem;
+        }
+        .result-summary {
+          grid-template-columns: 1fr;
+        }
+        .distribution-card {
+          justify-content: center;
+        }
+        .results-private {
+          grid-template-columns: 1fr;
+          text-align: center;
+        }
+        .private-orbit {
+          margin-inline: auto;
+        }
+        .private-chips {
+          justify-content: center;
+        }
+        .race-card {
+          padding: 1.05rem;
+        }
+        .race-stage {
+          height: 220px;
+          padding-inline: 0.35rem;
+        }
+        .race-column {
+          width: 27vw;
+        }
+        .race-head {
+          align-items: flex-start;
+          flex-direction: column;
+          gap: 0.25rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="particles-bg"></div>
+    <header class="header">
+      <div class="container header-inner">
+        <a class="brand" href="index.html"
+          ><img src="assets/man3jember-logo.png" alt="Logo MAN 3 Jember" /><span
+            class="brand-copy"
+            ><strong>MPK MAN 3 JEMBER</strong
+            ><span>Election Committee · 2026</span></span
+          ></a
+        ><a class="btn btn-outline" href="index.html">Beranda</a>
+      </div>
+    </header>
+    <main class="container results">
+      <section class="result-head">
+        <div>
+          <p class="eyebrow">Rekapitulasi sementara</p>
+          <div class="gold-rule"></div>
+          <h1>Hasil Pemilihan</h1>
+          <p>Perolehan suara Ketua & Wakil Ketua MPK secara realtime.</p>
+          <span class="status-pill live" data-results-content
+            ><i class="status-dot"></i>Pembaruan langsung</span
+          >
+        </div>
+        <div class="total">
+          <b id="totalVotes">0</b><span>TOTAL SUARA MASUK</span>
+        </div>
+      </section>
+      <section class="results-private" id="resultsPrivateNotice" hidden>
+        <div class="private-orbit">⌁</div>
+        <div class="private-copy">
+          <p class="eyebrow">Ruang rekap terlindungi</p>
+          <h2>Perolehan suara sedang dirahasiakan.</h2>
+          <p id="resultsPrivateMessage">
+            Hasil realtime saat ini disembunyikan oleh panitia. Silakan kembali
+            setelah pengumuman resmi.
+          </p>
+          <div class="private-chips">
+            <span><i>●</i> Total suara tetap terlihat</span
+            ><span>Grafik ditutup</span><span>Aspirasi ditutup</span>
+          </div>
+        </div>
+      </section>
+      <section class="result-summary" data-results-content>
+        <div class="distribution-card">
+          <div class="donut" id="donut">
+            <div class="donut-label">
+              <b id="donutTotal">0</b><span>SUARA</span>
+            </div>
+          </div>
+          <div>
+            <p class="summary-title">SEBARAN SUARA</p>
+            <div class="legend" id="legend"></div>
+          </div>
+        </div>
+      </section>
+      <section class="race-card" data-results-content>
+        <div class="race-head">
+          <div>
+            <p class="eyebrow">Grafik kompetisi</p>
+            <h2>Pergerakan perolehan suara</h2>
+          </div>
+          <p>Kolom akan bergerak otomatis setiap suara masuk.</p>
+        </div>
+        <div class="race-stage" id="raceChart"></div>
+      </section>
+      <section class="chart" id="chart" data-results-content></section>
+      <section
+        class="glass-card aspirations"
+        data-results-content
+        data-aspirasi-content
+      >
+        <h2>Aspirasi Pemilih</h2>
+        <p>Pesan anonim dari siswa untuk pasangan calon.</p>
+        <div class="aspirasi-list" id="aspirasi">
+          <p>Belum ada aspirasi yang masuk.</p>
+        </div>
+      </section>
+    </main>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const chart = document.getElementById("chart"),
+          total = document.getElementById("totalVotes"),
+          donut = document.getElementById("donut"),
+          legend = document.getElementById("legend"),
+          raceChart = document.getElementById("raceChart");
+        CANDIDATES.forEach((c) => {
+          const r = document.createElement("article");
+          r.className = "result-row";
+          r.id = `row-${c.id}`;
+          r.innerHTML = `<span class="rank">#–</span><div class="avatar"><img src="${c.photo}" alt=""></div><div><p class="result-name">${c.chair}</p><p class="result-sub">bersama ${c.deputy}</p><div class="bar"><i class="fill" id="fill-${c.id}"></i></div></div><div class="score"><b id="count-${c.id}">0</b><span>SUARA · <i id="pct-${c.id}">0%</i></span></div>`;
+          chart.appendChild(r);
+        });
+        CANDIDATES.forEach((c) => {
+          const col = document.createElement("article");
+          col.className = "race-column";
+          col.id = `race-${c.id}`;
+          col.style.setProperty("--race-color", c.accent);
+          col.innerHTML = `<b class="race-value" id="race-value-${c.id}">0%</b><div class="race-bar-wrap"><i class="race-bar" id="race-fill-${c.id}"></i></div><p class="race-label">${c.shortName}<span id="race-count-${c.id}">0 suara</span></p>`;
+          raceChart.appendChild(col);
+        });
+        function render(votes) {
+          const t = getTotalVotes(votes);
+          total.textContent = t;
+          const results = CANDIDATES.map((c) => ({
+            ...c,
+            votes: votes[c.id] || 0,
+          }));
+          const sorted = [...results].sort((a, b) => b.votes - a.votes);
+          const stops = [];
+          let cursor = 0;
+          results.forEach((c) => {
+            const pct = t ? (c.votes / t) * 100 : 100 / results.length;
+            stops.push(`${c.accent} ${cursor}% ${cursor + pct}%`);
+            cursor += pct;
+          });
+          donut.style.setProperty(
+            "--distribution",
+            `conic-gradient(${stops.join(",")})`,
+          );
+          document.getElementById("donutTotal").textContent = t;
+          legend.innerHTML = results
+            .map(
+              (c) =>
+                `<p><i style="--legend:${c.accent}"></i>${c.shortName}</p>`,
+            )
+            .join("");
+          sorted.forEach((c, i) => {
+            const r = document.getElementById(`row-${c.id}`),
+              p = t ? (c.votes / t) * 100 : 0;
+            r.style.order = i;
+            r.querySelector(".rank").textContent = `#${i + 1}`;
+            document.getElementById(`count-${c.id}`).textContent = c.votes;
+            document.getElementById(`pct-${c.id}`).textContent =
+              `${p.toFixed(1)}%`;
+            requestAnimationFrame(
+              () => (
+                (document.getElementById(`fill-${c.id}`).style.width = `${p}%`),
+                (document.getElementById(`fill-${c.id}`).style.background =
+                  c.accent)
+              ),
+            );
+            const race = document.getElementById(`race-${c.id}`);
+            const raceValue = document.getElementById(`race-value-${c.id}`);
+            const oldValue = raceValue.textContent;
+            raceValue.textContent = `${p.toFixed(1)}%`;
+            document.getElementById(`race-count-${c.id}`).textContent =
+              `${c.votes} suara`;
+            requestAnimationFrame(
+              () =>
+                (document.getElementById(`race-fill-${c.id}`).style.height =
+                  `${t ? Math.max(4, p) : 2}%`),
+            );
+            if (oldValue !== raceValue.textContent) {
+              race.classList.remove("race-up");
+              void race.offsetWidth;
+              race.classList.add("race-up");
+            }
+          });
+        }
+        function aspiration(data) {
+          const el = document.getElementById("aspirasi");
+          if (!data.length) return;
+          el.innerHTML = data
+            .slice(0, 12)
+            .map(
+              (a) =>
+                `<article class="aspirasi"><small>${a.candidateName}</small><p>“${a.text}”</p></article>`,
+            )
+            .join("");
+        }
+        if (DEMO_MODE) {
+          const poll = () => {
+            render(Store.get("mpk26_votes") || {});
+            aspiration(Store.get("mpk26_aspirasi") || []);
+          };
+          poll();
+          setInterval(poll, 3000);
+        } else {
+          db.collection("candidates").onSnapshot((s) => {
+            const v = {};
+            s.forEach((d) => (v[d.id] = d.data().voteCount || 0));
+            render(v);
+          });
+          db.collection("aspirasi")
+            .orderBy("timestamp", "desc")
+            .limit(12)
+            .onSnapshot((s) => aspiration(s.docs.map((d) => d.data())));
+        }
+      });
+    </script>
+  </body>
+</html>

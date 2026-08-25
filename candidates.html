@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Profil Pasangan Calon · MPK 2026</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <style>
+      .overview {
+        padding: 3.5rem 0 5rem;
+      }
+      .overview-head {
+        max-width: 720px;
+        margin: 0 auto 3.6rem;
+        text-align: center;
+      }
+      .overview-head h1 {
+        color: var(--navy);
+        font-size: clamp(2.55rem, 5vw, 4.35rem);
+      }
+      .overview-head > p:last-child {
+        margin-top: 1rem;
+        color: var(--text-muted);
+      }
+      .overview-head .gold-rule {
+        margin-inline: auto;
+      }
+      .candidate-stories {
+        display: grid;
+        gap: 3.6rem;
+      }
+      .candidate-story {
+        --accent: var(--gold);
+        display: grid;
+        grid-template-columns: minmax(310px, 0.82fr) minmax(0, 1.18fr);
+        overflow: hidden;
+        border: 1px solid rgba(16, 34, 59, 0.1);
+        border-radius: 28px;
+        background: var(--paper);
+        box-shadow: var(--shadow-md);
+        opacity: 0;
+        transform: perspective(1200px) translateY(54px) rotateX(6deg)
+          rotateY(-18deg);
+        transform-origin: center center;
+        transition: box-shadow 0.3s;
+      }
+      .candidate-story.in-view {
+        animation: story-flip-in 0.95s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+      }
+      @keyframes story-flip-in {
+        0% {
+          opacity: 0;
+          transform: perspective(1200px) translateY(54px) rotateX(6deg)
+            rotateY(-72deg);
+        }
+        62% {
+          opacity: 1;
+          transform: perspective(1200px) translateY(-7px) rotateX(-2deg)
+            rotateY(5deg);
+        }
+        100% {
+          opacity: 1;
+          transform: perspective(1200px) translateY(0) rotateX(0) rotateY(0);
+        }
+      }
+      .candidate-story:hover {
+        box-shadow: var(--shadow-lg);
+      }
+      .candidate-story:nth-child(even) .story-photo {
+        order: 2;
+      }
+      .candidate-story:nth-child(even) .story-content {
+        order: 1;
+      }
+      .story-photo {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 4 / 5;
+        overflow: hidden;
+        background: linear-gradient(145deg, var(--navy-soft), var(--navy));
+      }
+      .story-photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: center top;
+        filter: saturate(0.92);
+        transition:
+          transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1),
+          filter 0.4s;
+      }
+      .candidate-story:hover .story-photo img {
+        transform: scale(1.03);
+        filter: saturate(1);
+      }
+      .photo-placeholder {
+        display: grid;
+        place-items: center;
+        height: 100%;
+        color: #fff;
+        font: 700 5rem var(--font-display);
+      }
+      .story-photo::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          0deg,
+          rgba(7, 26, 51, 0.65) 0%,
+          transparent 45%
+        );
+        pointer-events: none;
+      }
+      .story-number {
+        position: absolute;
+        z-index: 1;
+        top: 1.25rem;
+        left: 1.25rem;
+        display: grid;
+        place-items: center;
+        width: 48px;
+        height: 48px;
+        border: 1px solid rgba(255, 255, 255, 0.55);
+        border-radius: 50%;
+        color: #fff;
+        background: rgba(7, 26, 51, 0.2);
+        backdrop-filter: blur(6px);
+        font: 500 0.9rem var(--font-mono);
+      }
+      .photo-caption {
+        position: absolute;
+        z-index: 1;
+        right: 1.4rem;
+        bottom: 1.4rem;
+        left: 1.4rem;
+        color: #fff;
+      }
+      .photo-caption span {
+        display: block;
+        margin-bottom: 0.35rem;
+        color: var(--gold-light);
+        font-size: 0.63rem;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+      }
+      .photo-caption strong {
+        font: 700 1.55rem var(--font-display);
+      }
+      .photo-caption p {
+        margin-top: 0.3rem;
+        font-size: 0.75rem;
+        opacity: 0.85;
+      }
+      .story-content {
+        padding: clamp(1.7rem, 4vw, 3.5rem);
+      }
+      .story-content > .eyebrow {
+        color: var(--accent);
+      }
+      .story-content h2 {
+        margin-top: 0.7rem;
+        color: var(--navy);
+        font-size: clamp(2rem, 3.3vw, 3rem);
+      }
+      .story-content h2 span {
+        display: block;
+        margin-top: 0.55rem;
+        color: var(--text-muted);
+        font: 600 0.88rem var(--font-body);
+      }
+      .story-slogan {
+        margin: 1.4rem 0;
+        color: var(--accent);
+        font: 700 clamp(1.2rem, 2.2vw, 1.55rem) var(--font-display);
+      }
+      .program-card {
+        padding: 1.2rem;
+        border: 1px solid rgba(16, 34, 59, 0.09);
+        border-radius: 16px;
+        background: #fffdf8;
+      }
+      .program-card h3 {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        color: var(--navy);
+        font: 800 0.73rem var(--font-body);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      .program-card h3 i {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--accent);
+      }
+      .program-card > p {
+        margin: 0.65rem 0 1rem;
+        color: var(--text-muted);
+        font-size: 0.84rem;
+      }
+      .program-card ul {
+        display: grid;
+        gap: 0.55rem;
+        list-style: none;
+      }
+      .program-card li {
+        position: relative;
+        padding-left: 1.35rem;
+        font-size: 0.77rem;
+      }
+      .program-card li::before {
+        content: "→";
+        position: absolute;
+        left: 0;
+        color: var(--accent);
+        font-weight: 800;
+      }
+      .overview-cta {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        margin: 4rem auto 0;
+        text-align: center;
+      }
+      .overview-cta p {
+        color: var(--text-muted);
+        font-size: 0.84rem;
+      }
+      .overview-cta small {
+        color: var(--text-muted);
+        font-size: 0.68rem;
+      }
+      @media (max-width: 760px) {
+        .overview {
+          padding-top: 2.5rem;
+        }
+        .candidate-stories {
+          gap: 2rem;
+        }
+        .candidate-story,
+        .candidate-story:nth-child(even) {
+          grid-template-columns: 1fr;
+        }
+        .candidate-story:nth-child(even) .story-photo,
+        .candidate-story:nth-child(even) .story-content {
+          order: initial;
+        }
+        .story-photo {
+          aspect-ratio: 4 / 5;
+          width: 100%;
+          height: auto;
+          min-height: 0;
+        }
+        .story-content {
+          padding: 1.6rem;
+        }
+        .photo-caption strong {
+          font-size: 1.3rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="particles-bg"></div>
+    <header class="header">
+      <div class="container header-inner">
+        <a class="brand" href="index.html"
+          ><img src="assets/man3jember-logo.png" alt="Logo MAN 3 Jember" /><span
+            class="brand-copy"
+            ><strong>MPK MAN 3 JEMBER</strong
+            ><span>Pemilihan 2026/2027</span></span
+          ></a
+        ><a class="btn btn-outline" href="vote.html">Ke halaman pilih</a>
+      </div>
+    </header>
+    <main class="container overview">
+      <section class="overview-head">
+        <p class="eyebrow">Kenali sebelum menentukan</p>
+        <div class="gold-rule"></div>
+        <h1>Pasangan yang membawa suara siswa.</h1>
+        <p>
+          Kenali gagasan setiap pasangan. Semua visi dan misi disajikan utuh
+          dalam satu kartu agar mudah dibandingkan sebelum kamu memilih.
+        </p>
+      </section>
+      <section class="candidate-stories" id="candidateStories"></section>
+      <section class="overview-cta">
+        <p>Sudah menentukan pasangan yang paling sesuai dengan harapanmu?</p>
+        <a class="btn btn-primary" href="vote.html"
+          >Lanjut pilih pasangan <span>→</span></a
+        ><small>Suara yang telah dikirim tidak dapat diubah.</small>
+      </section>
+    </main>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        if (!getTokenFromSession()) {
+          location.href = "index.html";
+          return;
+        }
+        const list = document.getElementById("candidateStories");
+        CANDIDATES.forEach((c) => {
+          const card = document.createElement("article");
+          card.className = "candidate-story";
+          card.style.setProperty("--accent", c.accent);
+          const photo = c.photo
+            ? `<img src="${c.photo}" alt="Foto pasangan calon ${c.order}">`
+            : `<div class="photo-placeholder">${c.initials}</div>`;
+          card.innerHTML = `<div class="story-photo">${photo}<span class="story-number">${c.order}</span><div class="photo-caption"><span>PASANGAN CALON</span><strong>${c.chair} &amp; ${c.deputy}</strong><p>Ketua & Wakil Ketua MPK</p></div></div><div class="story-content"><p class="eyebrow">PASLON ${c.order}</p><h2>${c.chair}<span>Calon Ketua · bersama ${c.deputy}, Calon Wakil Ketua</span></h2><p class="story-slogan">“${c.slogan}”</p><div class="program-card"><h3><i></i> Visi &amp; Misi</h3><p><b>Visi:</b> ${c.vision}</p><ul>${c.missions.map((m) => `<li>${m}</li>`).join("")}</ul></div></div>`;
+          list.appendChild(card);
+        });
+        const cards = document.querySelectorAll(".candidate-story");
+        if (matchMedia("(prefers-reduced-motion: reduce)").matches)
+          cards.forEach((card) => card.classList.add("in-view"));
+        else {
+          const observer = new IntersectionObserver(
+            (entries) =>
+              entries.forEach((entry) => {
+                if (entry.isIntersecting) entry.target.classList.add("in-view");
+              }),
+            { threshold: 0.16 },
+          );
+          cards.forEach((card) => observer.observe(card));
+        }
+      });
+    </script>
+  </body>
+</html>
