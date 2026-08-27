@@ -345,37 +345,61 @@
             }, 500);
             return;
           }
-          const tr = db.runTransaction(async (tx) => {
-            const tRef = db.collection("tokens").doc(token),
-              cRef = db.collection("candidates").doc(selected),
-              aRef = db.collection("aspirasi").doc(),
-              t = await tx.get(tRef);
-            if (!t.exists || t.data().used) throw Error("INVALID");
-            const c = await tx.get(cRef);
-            tx.update(tRef, {
-              used: true,
-              usedAt: firebase.firestore.FieldValue.serverTimestamp(),
-            });
-            tx.set(
-              cRef,
-              { voteCount: (c.exists ? c.data().voteCount || 0 : 0) + 1 },
-              { merge: true },
-            );
-            if (aspiration) {
-              const cc = getCandidateById(selected);
-              tx.set(aRef, {
-                candidateId: selected,
-                candidateName: cc.shortName,
-                text: aspiration,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+          const MAX_RETRY = 5;
+          let attempt = 0;
+          async function doVote() {
+            attempt++;
+            try {
+              await db.runTransaction(async (tx) => {
+                const tRef = db.collection("tokens").doc(token);
+                const cRef = db.collection("candidates").doc(selected);
+                const t = await tx.get(tRef);
+                if (!t.exists || t.data().used)
+                  throw Object.assign(Error("INVALID"), { fatal: true });
+                const c = await tx.get(cRef);
+                tx.update(tRef, {
+                  used: true,
+                  usedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                });
+                tx.set(
+                  cRef,
+                  { voteCount: (c.exists ? c.data().voteCount || 0 : 0) + 1 },
+                  { merge: true },
+                );
+                if (aspiration) {
+                  const cc = getCandidateById(selected);
+                  const aRef = db.collection("aspirasi").doc();
+                  tx.set(aRef, {
+                    candidateId: selected,
+                    candidateName: cc.shortName,
+                    text: aspiration,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                  });
+                }
               });
+              finish();
+            } catch (err) {
+              if (err.fatal) {
+                showToast("Kode sudah digunakan atau tidak valid.", "error");
+                clearSession();
+                setTimeout(() => (location.href = "index.html"), 1200);
+                return;
+              }
+              if (attempt < MAX_RETRY) {
+                const delay = 300 * Math.pow(2, attempt - 1);
+                confirm.innerHTML = `<span class="loader"></span> Mencoba ulang (${attempt}/${MAX_RETRY})…`;
+                setTimeout(doVote, delay);
+              } else {
+                showToast(
+                  "Gagal mengirim suara setelah beberapa percobaan. Hubungi panitia.",
+                  "error",
+                );
+                confirm.disabled = false;
+                confirm.textContent = "Ya, kirim suara";
+              }
             }
-          });
-          tr.then(finish).catch(() => {
-            showToast("Gagal mengirim suara. Coba lagi.", "error");
-            confirm.disabled = false;
-            confirm.textContent = "Ya, kirim suara";
-          });
+          }
+          doVote();
         };
         document.getElementById("btnLogout").onclick = () => {
           clearSession();
